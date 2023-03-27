@@ -1,0 +1,642 @@
+<template>
+	<view class="page">
+		<swiper v-if="show_images.length>0" class="show-images" :indicator-dots="true" :autoplay="true" :interval="3000"
+			:duration="1000" style="height: 750rpx;">
+			<swiper-item v-for="(item,index) in show_images" :key="item.id">
+				<view class="swiper-item scaleImg">
+					<movable-area>
+					    <movable-view  direction="all" scale-value="1" scale-min="1" scale="true" scale-max="4">
+							<image :src="item.url" mode="widthFix" :alt="item.title" show-menu-by-longpress="true"></image>
+					    </movable-view>
+					  </movable-area> 
+					<!-- <image :src="item.url" mode="widthFix" :alt="item.title" ></image> -->
+				</view>
+			</swiper-item>
+		</swiper>
+		
+		<view class="dyui-container">
+		<view class="dyui-section ">
+			<view class="show-title">
+				<view class="t">{{show.title}}</view>
+				<view class="hits uni-center">
+					<uni-icons type="eye" size="20"></uni-icons>
+					<view>{{show.hits}}</view>
+				</view>
+			</view>
+			<view class="show-info d-flex ">
+				<view class="span">{{show.catname}}</view>
+			</view>
+			<div class="tishi">温馨提示：图片与实物可能存在一定颜色差异，以实物为准！</div>
+			<view class="show-cs uni-center d-flex">
+				<view class="item">
+					参数
+				</view>
+				<view class="item">
+					<text>编号</text><text class="c">{{show.title}}</text>
+				</view>
+				<view class="item">
+					<text>规格</text><text class="c">{{show.catname}}</text>
+				</view>
+				<view class="item">
+					<text>纹理</text><text class="c">{{show.wenli}}</text>
+				</view>
+			</view>
+			<view class="show-ys">
+				<view class="item">
+					<uni-icons type="circle-filled" color="#999999"></uni-icons> <text>超强硬度</text>
+				</view>
+				<view class="item">
+					<uni-icons type="circle-filled" color="#999999"></uni-icons> <text>抗冻抗热</text>
+				</view>
+				<view class="item">
+					<uni-icons type="circle-filled" color="#999999"></uni-icons> <text>源于石材</text>
+				</view>
+				<view class="item">
+					<uni-icons type="circle-filled" color="#999999"></uni-icons> <text>绿色环保</text>
+				</view>
+			</view>
+		</view>
+		
+		<view class="dyui-section mt-10">
+			
+			<view class="d-flex jc-sb fs-14">
+				<view class="text-gray">包装片数<text class="text-dark" style="padding-left: 3px;">{{show.bzps}}片/箱</text></view>
+				<view class="text-gray">产品重量<text class="text-dark" style="padding-left: 3px;">{{show.bzzl}}kg/箱</text></view>
+			</view>
+		</view>
+		
+		
+		<view class="dyui-section mt-10">
+			<view class="show-content">
+				<rich-text :nodes="content"></rich-text>
+			</view>
+		</view>
+
+			
+		</view> 
+
+		<!-- 底部一条 -->
+		<view class="dyui-footer-line"></view>
+		<view class="dyui-footer-nav">
+			<view class="icon-btn">
+				<!-- 			<view class="item" @tap="up">
+				<image src="../../static/icon/support.png"></image>
+				<text class="num">{{ supports }}</text>
+			</view> -->
+				<!-- 			<view class="item btn" @click="goUrl('../webkefu?url='+kfurl)">
+				<uni-icons type="headphones" color="#4188fd"></uni-icons> 在线客服
+			</view> -->
+<!-- 				<view class="item btn btn-bg" @click="call()">
+					<uni-icons type="phone" color="#FFF"></uni-icons> 电话咨询
+				</view> -->
+				<button class="item btn share" open-type="share">
+					<uni-icons type="redo" color="#4188fd"></uni-icons> 分享
+				</button>
+			</view>
+		</view>
+
+
+
+	</view>
+</template>
+
+<script>
+	var app = getApp();
+	import util from '@/utils/util.js';
+	export default {
+
+		components: {
+
+		},
+		data() {
+			return {
+				id: 0,
+				hits: 0,
+				favorites: 0,
+				supports: 0,
+				show: [],
+				show_title: '',
+				show_images: '',
+				content: '',
+				collectImg: '/static/icon/collect.png',
+				site: '',
+			};
+		},
+		onLoad: function(options) {
+			console.log('当前id=', options.id);
+			this.id = options.id
+			this.getShow()
+			this.getSite()
+			
+		},
+		onReady() {
+			
+		},
+		onShow() {
+
+			// #ifdef MP-BAIDU
+
+			uni.request({
+				url: app.globalData.http_api + 's=' + app.globalData.product_name +
+					'&c=show&id=' + this.id + '&api_call_function=module_show',
+				method: 'GET',
+				data: {},
+				success: res => {
+					console.log(res);
+					swan.setPageInfo({
+						title: res.data.data.title,
+						keywords: res.data.data.keywords,
+						description: res.data.data.description,
+						articleTitle: res.data.data.title,
+					})
+
+					console.log('SEO：' + res.data.data.title);
+				},
+				fail: () => {},
+				complete: () => {}
+
+			});
+
+			// #endif
+				
+		},
+		methods: {
+
+			async getShow() {
+
+				uni.request({
+					url: app.globalData.http_api + 's=' + app.globalData.product_name +
+						'&c=show&id=' + this.id + '&api_call_function=module_show',
+					method: 'GET',
+					data: {},
+					success: res => {
+						console.log('详细内容', res);
+						this.show = res.data.data
+						this.show_title = res.data.data.title
+						this.show_images = res.data.data.cptp
+						this.show_avatar = res.data.data.avatar
+						this.content = util.formatContent(res.data.data.content);
+						setTimeout(()=>{
+							uni.setNavigationBarTitle({
+								// title: '2222'
+								title: this.show_title
+							})
+						},500)
+					},
+					fail: () => {},
+					complete: () => {}
+				});
+			},
+
+			async getSite() {
+				// 网站信息
+				uni.request({
+					url: app.globalData.http_api + 's=httpapi&m=site',
+					method: 'GET',
+					data: {},
+					success: res => {
+						console.log('网站信息');
+						console.log(res);
+						if (res.data.code == 1) {
+							if (res.data.data.length == 0) {
+								this.nomore = true
+								console.log('没有数据了！');
+							} else {
+								this.site = res.data.data
+							}
+						} else {
+							console.log('请求错误：' + res.data.msg);
+						}
+					},
+					fail: () => {},
+					complete: () => {}
+
+				});
+
+			},
+			goUrl(url) {
+				uni.navigateTo({
+					url: url
+				})
+			},
+			goShow(id) {
+				uni.navigateTo({
+					url: '/pages/news/show?id=' + id
+				})
+			},
+			call() {
+				uni.makePhoneCall({
+					phoneNumber: this.site.tel
+				});
+			},
+			onShareAppMessage(res) {
+				return {
+					title: this.show_title, // 分享标题
+					// imageUrl: this.site.xcxsharethumb
+				}
+			},
+			//分享到朋友圈
+			onShareTimeline(res) {
+				let distSource = uni.getStorageSync('distSource');
+				if (distSource) {
+					return {
+						
+					}
+				}
+			},
+
+		}
+	};
+</script>
+<style lang="scss">
+	
+	.dyui-container {padding: 10px;}
+	.dyui-section {padding: 10px;}
+	.show-images {}
+
+	.swiper-item image {
+		width: 100%;
+	}
+
+	.uni-tag {
+		background-color: #66ce64;
+		border-radius: 3px;
+		color: #fff;
+		font-size: 14px;
+		padding: 2px 6px
+	}
+
+	.show-title {
+		padding: 5px 0;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		.t {color: #f00; font-size:20px;}
+		.hits {
+			font-size: 13px;
+			
+		}
+	}
+	.tishi {background-color: #efefef; padding: 10px; font-size:12px; color:#666; border-radius: 5px; margin-top: 10px;}
+	.show-cs {
+		align-items: center; padding: 15px 0;
+		.item {flex: 1; font-size: 14px;
+			text {display: block;}
+			.c {color: #666;}
+		}
+	}
+	.show-ys {display: flex; align-items: center; padding: 15px 0; border-top: solid 1px #eee;
+		.item {flex: 1; font-size: 14px; display: flex; align-items: center;
+			image {width: 20px; height:20px;}
+			text {display: block; padding-left: 5px;}
+			.c {color: #666;}
+		}
+	}
+	.show-info {
+		color: #999;
+		.span {background-color: #faebe4; font-size:12px; color: #f00; padding: 3px 6px;;}
+
+		.info-author {
+			display: flex;
+			align-items: center;
+
+			.author {
+				font-size: 16px;
+			}
+
+			.time {
+				color: #9B9B9B;
+				font-size: 14px;
+			}
+		}
+
+		.avatar {
+			margin-right: 8px;
+
+			image {
+				width: 40px;
+				height: 40px;
+				border-radius: 100px;
+				display: block;
+			}
+		}
+
+		.info-num {
+			text-align: right;
+
+			text {
+				display: block;
+				color: #9B9B9B;
+				font-size: 14px
+			}
+		}
+	}
+
+	.show-content {
+		padding: 10px 15px 20px;
+
+		image {
+			max-width: 100%;
+		}
+
+		img {
+			max-width: 100%;
+		}
+
+		* {
+			max-width: 100%;
+		}
+	}
+
+	.parameter {
+		padding: 10px 15px;
+
+		.parameter-item {
+			margin-bottom: 15px;
+		}
+
+		.uni-tag {
+			margin-right: 8px;
+		}
+
+		.tag-line {
+			color: #66ce64;
+			margin-right: 8px;
+		}
+	}
+.scaleImg {
+        width: 605px;
+        height: 760px;
+        &>movable-area {   
+            height: 760px;     
+            width: 100%;
+            position:fixed;
+            overflow: hidden;
+            left: 0;
+            z-index: 1000;
+            movable-view{
+                display: flex;
+                justify-content: center;
+                width: 100%;
+                height: 100%;
+                image {
+                    width: 605px;
+                    height: 760px;
+                }
+            }
+       
+        }
+    }
+
+	.dyui-section {
+		background-color: #fff;
+		margin-top: 15px;
+
+		.section-header {
+			padding: 10px;
+			border-bottom: solid 1px #ddd;
+			margin: 0 10px;
+
+			.tit {
+				font-size: 16px;
+				font-weight: bold;
+			}
+
+			.more {
+				font-size: 14px;
+				color: #F76260;
+			}
+		}
+
+		.section-body {
+			padding: 10px;
+		}
+	}
+
+	// 产品列表
+	.product-list {
+		display: flex;
+		flex-wrap: wrap;
+
+		.list-item {
+			flex: 0 0 50%;
+			width: 50px;
+			text-align: center;
+			padding: 10px;
+			box-sizing: border-box;
+
+			.thumb {
+				image {
+					width: 100%;
+					border-radius: 5px;
+					border: solid 1px #eee
+				}
+			}
+		}
+	}
+
+
+	// 横向滚动
+	.dyui-scroll-anli {
+
+		.scroll-view_H {
+			white-space: nowrap;
+			width: 100%;
+		}
+
+		.scroll-view-item_H {
+			display: inline-block;
+			width: 40%;
+			padding: 10px;
+			box-sizing: border-box;
+			text-align: center;
+
+			.thumb {
+				image {
+					width: 100%;
+					border-radius: 5px;
+					border: solid 1px #eee
+				}
+			}
+
+			.t {
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+		}
+	}
+
+	.dyui-footer-line {
+		height: 50px;
+	}
+
+	.dyui-footer-nav {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		background-color: #fff;
+		height: 50px;
+		border-top: solid 1px #eee;
+
+		image {
+			width: 30px;
+			height: 30px;
+		}
+
+		.isay {
+			margin-left: 30rpx;
+			height: 55rpx;
+			line-height: 55rpx;
+			width: 330rpx;
+			border: 1px solid #c9c9c9;
+			border-radius: 10rpx;
+			font-size: 25rpx;
+			text-indent: 20rpx;
+		}
+
+		.icon-btn {
+			flex: 1;
+			display: flex;
+			align-items: center;
+			padding: 5px 10px;
+		}
+
+		.item {
+			flex: 1;
+			position: relative;
+			text-align: center;
+			margin-left: 5px;
+			margin-right: 5px;
+
+			.num {
+				position: absolute;
+				top: -5px;
+				right: -5px;
+				background-color: #FF5D5D;
+				color: #fff;
+				fonts-size: 10px;
+				border-radius: 100px;
+				height: 18px;
+				line-height: 18px;
+				min-width: 18px;
+				padding: 2px;
+				text-align: center;
+			}
+		}
+
+		.btn {
+			border: solid 1px #4188fd;
+			font-size: 14px;
+			color: #4188fd;
+			padding: 3px 10px;
+			height: 32px;
+			line-height: 24px;
+			border-radius: 3px;
+			box-sizing: border-box;
+		}
+
+		.btn-bg {
+			border: solid 1px #4188fd;
+			background-color: #4188fd;
+			color: #FFF;
+		}
+
+		button {}
+
+		button::after {
+			display: none;
+		}
+
+	}
+
+
+	.comment-section {
+		margin-top: 15px;
+		background-color: #fff;
+
+		.section-header {
+			padding: 10px 0;
+			border-bottom: solid 1px #ddd;
+			margin: 0 15px;
+
+			.tit {
+				font-size: 16px;
+				font-weight: bold;
+			}
+
+			.more {
+				font-size: 14px;
+				color: #F76260;
+			}
+		}
+
+		.section-body {
+			padding: 10px 15px;
+		}
+
+		.comment-list {
+
+			.list-item {
+				margin-bottom: 15px;
+			}
+
+			.list-item .box {
+				display: flex;
+
+				.thumb image {
+					width: 40px;
+					height: 40px;
+					border-radius: 100px;
+					margin-right: 10px;
+				}
+
+				.info {
+					.commentUser {
+						.author {
+							color: #000;
+							font-size: 30rpx
+						}
+					}
+
+					.time {
+						font-size: 28rpx;
+						color: #888
+					}
+
+					.pl-text {
+						font-size: 34rpx;
+						color: #333
+					}
+				}
+			}
+		}
+
+	}
+
+
+	.pl-main {
+		padding: 15px;
+		background-color: #fff;
+
+		.isay {
+			width: 100%;
+			min-height: 80px;
+			background-color: #f9f6f7;
+			padding: 10px;
+			box-sizing: border-box;
+		}
+
+		.btn {
+			width: 50%;
+			height: 66rpx;
+			line-height: 66rpx;
+			font-size: 28rpx;
+			margin-top: 15px;
+
+		}
+	}
+</style>
