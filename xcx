@@ -1,18 +1,19 @@
 <template>
 	<view class="page">
-		<swiper v-if="show_images.length>0" class="show-images" :indicator-dots="true" :autoplay="true" :interval="3000"
-			:duration="1000" style="height: 750rpx;">
-			<swiper-item v-for="(item,index) in show_images" :key="item.id">
-				<view class="swiper-item scaleImg">
-					<movable-area>
-					    <movable-view  direction="all" scale-value="1" scale-min="1" scale="true" scale-max="4">
-							<image :src="item.url" mode="widthFix" :alt="item.title" show-menu-by-longpress="true"></image>
-					    </movable-view>
-					  </movable-area> 
-					<!-- <image :src="item.url" mode="widthFix" :alt="item.title" ></image> -->
-				</view>
-			</swiper-item>
-		</swiper>
+		    <swiper v-if="show_images.length>0" class="show-images" :indicator-dots="true" :autoplay="true" :interval="3000"
+		      :duration="1000" style="height: 750rpx;">
+		      <swiper-item v-for="(item,index) in show_images" :key="item.id">
+		        <view class="swiper-item scaleImg">
+		          <movable-area style="height: 100%; width: 100%;">
+		            <movable-view direction="all" scale-value="1" scale-min="1" scale="true" scale-max="4"
+		              style="width: auto; height: auto;">
+		              <image :src="item.url" mode="aspectFit" :alt="item.title" show-menu-by-longpress="true"
+		                style="width: 100%; max-height: 100%; margin: auto;"></image>
+		            </movable-view>
+		          </movable-area>
+		        </view>
+		      </swiper-item>
+		    </swiper>
 		
 		<view class="dyui-container">
 		<view class="dyui-section ">
@@ -364,29 +365,26 @@
 			margin-right: 8px;
 		}
 	}
-.scaleImg {
-        width: 605px;
-        height: 760px;
-        &>movable-area {   
-            height: 760px;     
-            width: 100%;
-            position:fixed;
-            overflow: hidden;
-            left: 0;
-            z-index: 1000;
-            movable-view{
-                display: flex;
-                justify-content: center;
-                width: 100%;
-                height: 100%;
-                image {
-                    width: 605px;
-                    height: 760px;
-                }
-            }
-       
-        }
+.show-images {
+  height: 100vh;
+  .swiper-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .scaleImg {
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      img {
+        height: auto;
+        max-height: 100%;
+        max-width: 100%;
+      }
     }
+  }
+}
 
 	.dyui-section {
 		background-color: #fff;
