@@ -6,7 +6,7 @@
 				<view class="swiper-item scaleImg">
 					<movable-area>
 					    <movable-view  direction="all" scale-value="1" scale-min="1" scale="true" scale-max="4">
-							<image :src="item.url" mode="widthFix" :alt="item.title" show-menu-by-longpress="true"></image>
+							<image style="height:750rpx" :src="item.url" mode="aspectFit" :alt="item.title" show-menu-by-longpress="true"></image>
 					    </movable-view>
 					  </movable-area> 
 					<!-- <image :src="item.url" mode="widthFix" :alt="item.title" ></image> -->
