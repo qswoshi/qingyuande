@@ -105,50 +105,6 @@
 	import util from '@/utils/util.js';
 	export default {
 
-mounted() {
-  this.addPreviewListener(); // 添加图片预览功能
-},
-
-methods: {
-  addPreviewListener() {
-    const that = this; // 缓存this指针
-    const nodeList = uni.createSelectorQuery().selectAll('.swiper-item img'); // 获取所有轮播项图片节点
-    nodeList.fields({ node: true, size: true }, (result) => { // 遍历所有节点
-      result.forEach((item) => {
-        uni.getImageInfo({ // 获取图片信息
-          src: item.node.src,
-          success(res) {
-            if (res.type === 'unknown') return; // 如果图片类型不支持，退出函数
-            uni.createSelectorQuery().select(item.node).boundingClientRect((rect) => { // 获取图片位置信息
-              uni.previewImage({ // 图片预览
-                urls: [item.node.src], // 预览的图片地址列表
-                current: item.node.src, // 当前预览的图片地址
-                success() {
-                  if (res.type === 'QR_CODE') { // 如果是二维码，识别二维码
-                    that.scanQRCode(item.node.src);
-                  }
-                }
-              })
-            }).exec();
-          }
-        })
-      })
-    }).exec();
-  },
-
-  scanQRCode(src) { // 识别二维码函数
-    uni.scanCode({
-      onlyFromCamera: true,
-      success(res) {
-        console.log('扫码成功：', res.result);
-      },
-      fail(res) {
-        console.log('扫码失败：', res);
-      }
-    })
-  }
-},
-
 		components: {
 
 		},
